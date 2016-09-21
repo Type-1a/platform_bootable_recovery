@@ -5,7 +5,7 @@ LOCAL_SRC_FILES:= \
 	twrpback.cpp \
 	../twrpDigest.cpp \
 	../digest/md5.c
-LOCAL_SHARED_LIBRARIES += libstdc++ libz
+LOCAL_SHARED_LIBRARIES += libstdc++ libz libselinux
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -lt 23; echo $$?),0)
     LOCAL_C_INCLUDES += external/stlport/stlport
     LOCAL_SHARED_LIBRARIES += libstlport
@@ -25,21 +25,18 @@ include $(BUILD_EXECUTABLE)
 include $(CLEAR_VARS)
 LOCAL_MODULE := libtwadbbu
 LOCAL_MODULE_TAGS := optional
-LOCAL_CFLAGS = -D_FILE_OFFSET_BITS=64 -DMTP_DEVICE -DMTP_HOST -fno-strict-aliasing
-LOCAL_C_INCLUDES += $(LOCAL_PATH) bionic frameworks/base/include system/core/include bionic/libc/private/
+LOCAL_CFLAGS = -D_FILE_OFFSET_BITS=64 -fno-strict-aliasing
+LOCAL_C_INCLUDES += bionic external/zlib
 ifeq ($(shell test $(PLATFORM_SDK_VERSION) -lt 23; echo $$?),0)
     LOCAL_C_INCLUDES += external/stlport/stlport
+    LOCAL_SHARED_LIBRARIES += libstlport
+else
+    LOCAL_SHARED_LIBRARIES += libc++
 endif
 
 LOCAL_SRC_FILES = \
     libtwadbbu.cpp
 
 LOCAL_SHARED_LIBRARIES += libz libc libstdc++
-
-ifeq ($(shell test $(PLATFORM_SDK_VERSION) -lt 23; echo $$?),0)
-    LOCAL_SHARED_LIBRARIES += libstlport
-else
-    LOCAL_SHARED_LIBRARIES += libc++
-endif
 
 include $(BUILD_SHARED_LIBRARY)
